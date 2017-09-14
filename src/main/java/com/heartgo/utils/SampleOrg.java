@@ -1,4 +1,4 @@
-package com.heartgo.fabric;
+package com.heartgo.utils;
 
 import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.User;

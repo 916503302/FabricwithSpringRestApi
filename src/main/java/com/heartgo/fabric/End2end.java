@@ -14,22 +14,22 @@
 
 package com.heartgo.fabric;
 
-import com.heartgo.configfile.Config;
+import com.heartgo.myutil.Config;
+import com.heartgo.utils.SampleOrg;
 import org.apache.commons.codec.binary.Hex;
-import org.hyperledger.fabric.protos.common.Configtx;
 import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.protos.peer.Query;
 import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
-import org.hyperledger.fabric.sdk.security.CryptoSuite;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -92,6 +92,14 @@ public class End2end {
     }
     public ClientBean composeClient() {
         try {
+            testSampleOrgs = testConfig.getIntegrationTestsSampleOrgs();
+            //Set up hfca for each sample org
+
+            for (SampleOrg sampleOrg : testSampleOrgs) {
+                String caURL = sampleOrg.getCALocation();
+
+                sampleOrg.setCAClient(HFCAClient.createNewInstance(caURL, null));
+            }
             Collection<SampleOrg>  sampleorgs = new CheckConfig().checkConfig(testConfig);
             ////////////////////////////
             // Setup client
@@ -101,11 +109,14 @@ public class End2end {
             setup.SetupUsers(sampleorgs);
 
 
+
+
             //Todo change more beautiful; thanks to zhangpeng
             RunChannel runChannel = new RunChannel();
 
             SampleOrg sampleOrg = testConfig.getIntegrationTestsSampleOrg("peerOrg2");
 
+            out("Compose Client sampleOrg is " + sampleOrg.getUser(testConfig.TESTUSER_1_NAME));
 
             Channel newChannel = reconstructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
 
@@ -128,7 +139,7 @@ public class End2end {
 
 
            runchannel.Inatall(newClientBean.getClient(),newClientBean.getChannel(),
-                                newClientBean.getSampleorgs(),newClientBean.getChaincodeid());
+                                newClientBean.getSampleorg(),newClientBean.getChaincodeid());
 
     } catch (Exception e) {
         e.printStackTrace();
@@ -149,17 +160,115 @@ public class End2end {
 
             RunChannel runChannel = newClientBean.getRunchannel();
 
-            CompletableFuture<BlockEvent.TransactionEvent> resp = runChannel.SendtTansactionToPeers(newClientBean.getClient(),newClientBean.getChannel(),
-                    newClientBean.getChaincodeid(),newClientBean.getSampleorgs(), transactionInfo);
+            runChannel.SendtTansactionToPeers(newClientBean.getClient(),newClientBean.getChannel(),
+                    newClientBean.getChaincodeid(),newClientBean.getSampleorg(), transactionInfo);
 
-            out("\nTraverse the blocks for chain %s ", newClientBean.getChannel().getName());
+            out("\nTraverse the blocks for chain  "+ newClientBean.getChannel().getName());
 
-            out("That's all folks!", resp.toString());
+            out("That's all folks!");
 
 
 
         } catch(Exception e) {
             e.printStackTrace();
+
+        }
+
+    }
+    public void Transactionby(ClientBean newClientBean, String[] transactioninfo) {
+
+        Channel channel = newClientBean.getChannel();
+        HFClient client  = newClientBean.getClient();
+        SampleOrg sampleOrg = newClientBean.getSampleorg();
+
+
+        final String channelName = channel.getName();
+
+        try {
+
+//            final boolean changeContext = false; // BAR_CHANNEL_NAME.equals(channel.getName()) ? true : false;
+            final boolean changeContext = testConfig.BAR_CHANNEL_NAME.equals(channel.getName());
+
+            out("Running Channel %s with a delta %d", channelName, 0);
+
+
+            channel.setTransactionWaitTime(testConfig.getTransactionWaitTime());
+            channel.setDeployWaitTime(testConfig.getDeployWaitTime());
+
+            ////////////////////////////
+            // Send Query Proposal to all peers see if it's what we expect from end of End2endIT
+            //
+
+            //Set user context on client but use explicit user contest on each call.
+            if (changeContext) {
+                System.out.println("Transactionby USERS Client sampleOrg is " + sampleOrg.getUser("user1"));
+
+                client.setUserContext(sampleOrg.getUser(testConfig.TESTUSER_1_NAME));
+            }
+
+            moveAmount(client, channel, chaincodeID, "25", changeContext ? sampleOrg.getPeerAdmin() : null);
+
+        } catch (Exception e){
+            e.printStackTrace();
+
+        }
+    }
+    CompletableFuture<BlockEvent.TransactionEvent> moveAmount(HFClient client, Channel channel, ChaincodeID chaincodeID, String moveAmount, User user) {
+
+        try {
+            Collection<ProposalResponse> successful = new LinkedList<>();
+            Collection<ProposalResponse> failed = new LinkedList<>();
+
+            ///////////////
+            /// Send transaction proposal to all peers
+            TransactionProposalRequest transactionProposalRequest = client.newTransactionProposalRequest();
+            transactionProposalRequest.setChaincodeID(chaincodeID);
+            transactionProposalRequest.setFcn("invoke");
+            transactionProposalRequest.setArgs(new String[] {"move", "a", "b", moveAmount});
+            transactionProposalRequest.setProposalWaitTime(testConfig.getProposalWaitTime());
+            if (user != null) { // specific user use that
+                transactionProposalRequest.setUserContext(user);
+            }
+            out("sending transaction proposal to all peers with arguments: move(a,b,%s)", moveAmount);
+
+            Collection<ProposalResponse> invokePropResp = channel.sendTransactionProposal(transactionProposalRequest);
+            for (ProposalResponse response : invokePropResp) {
+                if (response.getStatus() == ChaincodeResponse.Status.SUCCESS) {
+                    out("Successful transaction proposal response Txid: %s from peer %s", response.getTransactionID(), response.getPeer().getName());
+                    successful.add(response);
+                } else {
+                    failed.add(response);
+                }
+            }
+
+            // Check that all the proposals are consistent with each other. We should have only one set
+            // where all the proposals above are consistent.
+            Collection<Set<ProposalResponse>> proposalConsistencySets = SDKUtils.getProposalConsistencySets(invokePropResp);
+            if (proposalConsistencySets.size() != 1) {
+                out(format("Expected only one set of consistent move proposal responses but got %d", proposalConsistencySets.size()));
+            }
+
+            out("Received %d transaction proposal responses. Successful+verified: %d . Failed: %d",
+                    invokePropResp.size(), successful.size(), failed.size());
+            if (failed.size() > 0) {
+                ProposalResponse firstTransactionProposalResponse = failed.iterator().next();
+
+                throw new ProposalException(format("Not enough endorsers for invoke(move a,b,%s):%d endorser error:%s. Was verified:%b",
+                        moveAmount, firstTransactionProposalResponse.getStatus().getStatus(), firstTransactionProposalResponse.getMessage(), firstTransactionProposalResponse.isVerified()));
+
+            }
+            out("Successfully received transaction proposal responses.");
+
+            ////////////////////////////
+            // Send transaction to orderer
+            out("Sending chaincode transaction(move a,b,%s) to orderer.", moveAmount);
+            if (user != null) {
+                return channel.sendTransaction(successful, user);
+            }
+            return channel.sendTransaction(successful);
+        } catch (Exception e) {
+
+            throw new CompletionException(e);
 
         }
 
@@ -192,6 +301,7 @@ public class End2end {
 
     private Channel reconstructChannel(String name, HFClient client, SampleOrg sampleOrg) throws Exception {
 
+        out("重建通道！");
         client.setUserContext(sampleOrg.getPeerAdmin());
         Channel newChannel = client.newChannel(name);
 
@@ -203,12 +313,10 @@ public class End2end {
         for (String peerName : sampleOrg.getPeerNames()) {
             String peerLocation = sampleOrg.getPeerLocation(peerName);
             Peer peer = client.newPeer(peerName, peerLocation, testConfig.getPeerProperties(peerName));
-
             Set<String> channels = client.queryChannels(peer);
             if (!channels.contains(name)) {
                 throw new AssertionError(format("Peer %s does not appear to belong to channel %s", peerName, name));
             }
-
             newChannel.addPeer(peer);
             sampleOrg.addPeer(peer);
         }
@@ -219,7 +327,6 @@ public class End2end {
             newChannel.addEventHub(eventHub);
         }
         newChannel.initialize();
-
         for (Peer peer : newChannel.getPeers()) {
 
             if (!checkInstalledChaincode(client, peer, testConfig.CHAIN_CODE_NAME, testConfig.CHAIN_CODE_PATH, testConfig.CHAIN_CODE_VERSION)) {
@@ -234,9 +341,6 @@ public class End2end {
             }
 
         }
-
-        out("channel is "+ newChannel.getName());
-        out("channel peer"+ newChannel.getPeers());
         return newChannel;
     }
 

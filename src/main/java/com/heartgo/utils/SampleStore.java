@@ -12,7 +12,7 @@
  *  limitations under the License.
  */
 
-package com.heartgo.fabric;
+package com.heartgo.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;

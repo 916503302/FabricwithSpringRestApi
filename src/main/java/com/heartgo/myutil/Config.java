@@ -11,9 +11,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.heartgo.configfile;
+package com.heartgo.myutil;
 
-import com.heartgo.fabric.SampleOrg;
+import com.heartgo.utils.SampleOrg;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hyperledger.fabric.sdk.helper.Utils;

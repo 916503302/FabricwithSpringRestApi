@@ -12,7 +12,7 @@
  *  limitations under the License.
  */
 
-package com.heartgo.fabric;
+package com.heartgo.utils;
 
 import io.netty.util.internal.StringUtil;
 import org.bouncycastle.util.encoders.Hex;
@@ -198,7 +198,7 @@ public class SampleUser implements User, Serializable {
         return mspId;
     }
 
-    String mspId;
+    public String mspId;
 
     public void setMspId(String mspID) {
         this.mspId = mspID;

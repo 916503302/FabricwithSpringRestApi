@@ -1,7 +1,8 @@
 package com.heartgo.fabric;
 
-import com.heartgo.configfile.Config;
+import com.heartgo.myutil.Config;
 import com.heartgo.myutil.ConfigHelper;
+import com.heartgo.utils.SampleOrg;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 
 import java.net.MalformedURLException;

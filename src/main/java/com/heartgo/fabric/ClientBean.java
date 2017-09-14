@@ -1,5 +1,6 @@
 package com.heartgo.fabric;
 
+import com.heartgo.utils.SampleOrg;
 import org.hyperledger.fabric.sdk.ChaincodeID;
 import org.hyperledger.fabric.sdk.HFClient;
 import org.hyperledger.fabric.sdk.*;
@@ -9,14 +10,14 @@ public class ClientBean
     private HFClient client;
     private Channel channel;
     private ChaincodeID chaincodeid;
-    private SampleOrg sampleorgs;
+    private SampleOrg sampleorg;
     private RunChannel runchannel;
-    public ClientBean(HFClient client,Channel channel,ChaincodeID chaincodeid,SampleOrg sampleorgs,RunChannel runchannel){
+    public ClientBean(HFClient client,Channel channel,ChaincodeID chaincodeid,SampleOrg sampleorg,RunChannel runchannel){
         this.chaincodeid=chaincodeid;
         this.channel=channel;
         this.client=client;
         this.runchannel=runchannel;
-        this.sampleorgs=sampleorgs;
+        this.sampleorg=sampleorg;
     }
     public void setClient(HFClient client){
         this.client=client;
@@ -38,11 +39,11 @@ public class ClientBean
     public ChaincodeID getChaincodeid(){
         return chaincodeid;
     }
-    public void setSampleorgs(SampleOrg sampleorgs){
-        this.sampleorgs=sampleorgs;
+    public void setSampleorg(SampleOrg sampleorg){
+        this.sampleorg=sampleorg;
     }
-    public SampleOrg  getSampleorgs(){
-        return sampleorgs;
+    public SampleOrg  getSampleorg(){
+        return sampleorg;
     }
     public void setRunchannel(RunChannel runchannel){
         this.runchannel=runchannel;

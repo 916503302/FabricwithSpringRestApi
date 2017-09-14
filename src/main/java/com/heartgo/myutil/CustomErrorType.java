@@ -1,4 +1,4 @@
-package com.heartgo.util;
+package com.heartgo.myutil;
 
 
 public class CustomErrorType {
