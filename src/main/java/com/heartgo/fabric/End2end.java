@@ -77,10 +77,11 @@ public class End2end {
 
             SampleOrg sampleOrg = testConfig.getIntegrationTestsSampleOrg("peerOrg2");
 
+            ClientBean newClienBean =  new ClientBean(client, chaincodeID, sampleOrg, runChannel);
 
             Channel newChannel = constructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
-
-            return new ClientBean(client, newChannel, chaincodeID, sampleOrg, runChannel);
+            newClienBean.setChannel(newChannel);
+            return newClienBean;
 
 
         } catch (Exception e) {
@@ -118,10 +119,11 @@ public class End2end {
 
             out("Compose Client sampleOrg is " + sampleOrg.getUser(testConfig.TESTUSER_1_NAME));
 
-            Channel newChannel = reconstructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
+            Channel newChannel = constructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
+            ClientBean newClienBean = new ClientBean(client, chaincodeID, sampleOrg, runChannel);
 
-            return new ClientBean(client, newChannel, chaincodeID, sampleOrg, runChannel);
-
+            newClienBean.setChannel(newChannel);
+            return newClienBean;
 
         } catch (Exception e) {
             e.printStackTrace();
