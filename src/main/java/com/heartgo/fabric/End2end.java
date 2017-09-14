@@ -206,14 +206,14 @@ public class End2end {
                 client.setUserContext(sampleOrg.getUser(testConfig.TESTUSER_1_NAME));
             }
 
-            moveAmount(client, channel, chaincodeID, "25", changeContext ? sampleOrg.getPeerAdmin() : null);
+            Invoke(client, channel, chaincodeID, transactioninfo, changeContext ? sampleOrg.getPeerAdmin() : null);
 
         } catch (Exception e){
             e.printStackTrace();
 
         }
     }
-    CompletableFuture<BlockEvent.TransactionEvent> moveAmount(HFClient client, Channel channel, ChaincodeID chaincodeID, String moveAmount, User user) {
+    CompletableFuture<BlockEvent.TransactionEvent> Invoke(HFClient client, Channel channel, ChaincodeID chaincodeID, String[] str, User user) {
 
         try {
             Collection<ProposalResponse> successful = new LinkedList<>();
@@ -224,12 +224,12 @@ public class End2end {
             TransactionProposalRequest transactionProposalRequest = client.newTransactionProposalRequest();
             transactionProposalRequest.setChaincodeID(chaincodeID);
             transactionProposalRequest.setFcn("invoke");
-            transactionProposalRequest.setArgs(new String[] {"move", "a", "b", moveAmount});
+            transactionProposalRequest.setArgs(str);
             transactionProposalRequest.setProposalWaitTime(testConfig.getProposalWaitTime());
             if (user != null) { // specific user use that
                 transactionProposalRequest.setUserContext(user);
             }
-            out("sending transaction proposal to all peers with arguments: move(a,b,%s)", moveAmount);
+            out("sending transaction proposal to all peers with arguments: m");
 
             Collection<ProposalResponse> invokePropResp = channel.sendTransactionProposal(transactionProposalRequest);
             for (ProposalResponse response : invokePropResp) {
@@ -254,14 +254,14 @@ public class End2end {
                 ProposalResponse firstTransactionProposalResponse = failed.iterator().next();
 
                 throw new ProposalException(format("Not enough endorsers for invoke(move a,b,%s):%d endorser error:%s. Was verified:%b",
-                        moveAmount, firstTransactionProposalResponse.getStatus().getStatus(), firstTransactionProposalResponse.getMessage(), firstTransactionProposalResponse.isVerified()));
+                        str, firstTransactionProposalResponse.getStatus().getStatus(), firstTransactionProposalResponse.getMessage(), firstTransactionProposalResponse.isVerified()));
 
             }
             out("Successfully received transaction proposal responses.");
 
             ////////////////////////////
             // Send transaction to orderer
-            out("Sending chaincode transaction(move a,b,%s) to orderer.", moveAmount);
+            out("Sending chaincode transaction() to orderer.");
             if (user != null) {
                 return channel.sendTransaction(successful, user);
             }

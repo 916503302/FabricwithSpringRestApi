@@ -6,10 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.heartgo.fabric.ClientBean;
 import com.heartgo.fabric.End2end;
 
@@ -59,9 +56,18 @@ public class RestApiController {
 	}
 
 
-	@RequestMapping(value = "/admin/transaction", method = RequestMethod.GET)
-	public ResponseEntity<?> Transaction() {
-		String[] str=new String[]{"move","b","a","10"};
+	@RequestMapping(value = "/admin/createorg", method = RequestMethod.GET)
+	public ResponseEntity<?> CreateOrg() {
+		String[] str=new String[]{"createOrganization","123","pingan","3"};
+		end.Transaction(newClientBean, str);
+
+		HttpHeaders headers = new HttpHeaders();
+		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(value = "/admin/getorg", method = RequestMethod.GET)
+	public ResponseEntity<?> GetOrg() {
+		String[] str=new String[]{"createOrganization","123","pingan","3"};
 		end.Transaction(newClientBean, str);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -69,12 +75,10 @@ public class RestApiController {
 	}
 
 
-
-
 	@RequestMapping(value = "/admin/query", method = RequestMethod.GET)
 	public void Query() {
 
-		String[] str=new String[] {"query", "b"};
+		String[] str=new String[] {"query", "123"};
 		System.out.println("str:"+str.toString());
 		end.QueryTransation(newClientBean, str);
 		System.out.println("transaction ok");
@@ -82,7 +86,7 @@ public class RestApiController {
 
 	@RequestMapping(value = "/admin/tran", method = RequestMethod.GET)
 	public void INVOKE() {
-		String[] str=new String[]{"move","a","b","10"};
+		String[] str=new String[]{"createOrganization","123","pingan","3"};
 
 		end.Transactionby(newClientBean, str);
 	}

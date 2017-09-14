@@ -44,7 +44,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class Config {
     private static final Log logger = LogFactory.getLog(Config.class);
 
-    private static final String DEFAULT_CONFIG = "/home/daneel/go/Fabric-Java-SpringMVC/springtest/src/test/java/org/hyperledger/fabric/sdk/testutils.properties";
+    private static final String DEFAULT_CONFIG = "src/test/java/org/hyperledger/fabric/sdk/testutils.properties";
     private static final String ORG_HYPERLEDGER_FABRIC_SDK_CONFIGURATION = "org.hyperledger.fabric.sdktest.configuration";
 
     private static final String PROPBASE = "org.hyperledger.fabric.sdktest.";
@@ -67,10 +67,10 @@ public class Config {
     //配置
     public  static final String TEST_ADMIN_NAME = "admin";
     public static final String TESTUSER_1_NAME = "user1";
-    public static final String TEST_FIXTURES_PATH = "/home/daneel/go/Fabric-Java-SpringMVC/springtest/src/test/fixture";
+    public static final String TEST_FIXTURES_PATH = "src/test/fixture";
 
-    public static final String CHAIN_CODE_NAME = "example_cc_go";
-    public static final String CHAIN_CODE_PATH = "github.com/example_cc";
+    public static final String CHAIN_CODE_NAME = "asset";
+    public static final String CHAIN_CODE_PATH = "github.com/chaincode_asset";
     public static final String CHAIN_CODE_VERSION = "1";
 
     public static final String FOO_CHANNEL_NAME = "foo";
@@ -178,7 +178,7 @@ public class Config {
                 sampleOrg.setCAName(sdkProperties.getProperty((INTEGRATIONTESTS_ORG + org.getKey() + ".caName")));
 
                 if (runningFabricCATLS) {
-                    String cert = "/home/daneel/go/Fabric-Java-SpringMVC/springtest/src/test/fixture/sdkintegration/e2e-2Orgs/channel/crypto-config/peerOrganizations/DNAME/ca/ca.DNAME-cert.pem".replaceAll("DNAME", domainName);
+                    String cert = "src/test/fixture/sdkintegration/e2e-2Orgs/channel/crypto-config/peerOrganizations/DNAME/ca/ca.DNAME-cert.pem".replaceAll("DNAME", domainName);
                     File cf = new File(cert);
                     if (!cf.exists() || !cf.isFile()) {
                         throw new RuntimeException("TEST is missing cert file " + cf.getAbsolutePath());
@@ -325,7 +325,7 @@ public class Config {
 
     public String getTestChannelPath() {
 
-        return "/home/daneel/go/Fabric-Java-SpringMVC/springtest/src/test/fixture/sdkintegration/e2e-2Orgs/channel";
+        return "src/test/fixture/sdkintegration/e2e-2Orgs/channel";
 
     }
 
