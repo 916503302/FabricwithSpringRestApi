@@ -239,7 +239,7 @@ func (t *SimpleChaincode) CreateProduct(stub shim.ChaincodeStubInterface, args [
 	fmt.Println("ex02 CreateProduct")
 
 	var ProductID string      //产品id
-	var ProductName int       //产品名称
+	var ProductName string       //产品名称
 	var ProductType int       //产品类型
 	var OrganizationID string //产品所属机构id
 	var Portion int           //产品份额
@@ -251,7 +251,7 @@ func (t *SimpleChaincode) CreateProduct(stub shim.ChaincodeStubInterface, args [
 	}
 
 	ProductID = args[1]
-	ProductName, err = strconv.Atoi(args[2])
+	ProductName = args[2]
 	if err != nil {
 		return shim.Error("Expecting integer value for asset holding：Number ")
 	}
@@ -492,9 +492,8 @@ func (t *SimpleChaincode) WriteOrganization(stub shim.ChaincodeStubInterface, ar
 //WriteProduct 修改产品
 func (t *SimpleChaincode) WriteProduct(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	fmt.Println("ex02 WriteProduct")
-
 	var ProductID string      //产品id
-	var ProductName int       //产品名称
+  	var ProductName string       //产品名称
 	var ProductType int       //产品类型
 	var OrganizationID string //产品所属机构id
 	var Portion int           //产品份额
@@ -505,7 +504,7 @@ func (t *SimpleChaincode) WriteProduct(stub shim.ChaincodeStubInterface, args []
 	}
 
 	ProductID = args[1]
-	ProductName, err = strconv.Atoi(args[2])
+	ProductName = args[2]
 	if err != nil {
 		return shim.Error("Expecting integer value for asset holding：Number ")
 	}
@@ -612,6 +611,8 @@ func (t *SimpleChaincode) transation(stub shim.ChaincodeStubInterface, args []st
 	}
 
 	FromInfo, err := stub.GetState(FromID)
+
+
 	if err != nil {
 		return shim.Error(err.Error())
 	}

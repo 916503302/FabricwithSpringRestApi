@@ -3,6 +3,7 @@ package com.heartgo.controller;
 import java.util.concurrent.atomic.AtomicLong;
 
 
+import com.heartgo.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,9 @@ import com.heartgo.fabric.End2end;
 
 
 import com.heartgo.model.Greeting;
+
+
+
 
 @RestController
 public class RestApiController {
@@ -37,6 +41,7 @@ public class RestApiController {
 
 	}
 
+
 	@RequestMapping(value = "/admin/comclient", method = RequestMethod.GET)
 	public void ComposeClient() {
 
@@ -58,7 +63,7 @@ public class RestApiController {
 
 	@RequestMapping(value = "/admin/createorg", method = RequestMethod.GET)
 	public ResponseEntity<?> CreateOrg() {
-		String[] str=new String[]{"createOrganization","123","pingan","3"};
+		String[] str=new String[]{"createOrganization","123401","pingan","3"};
 		end.Transaction(newClientBean, str);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -78,7 +83,7 @@ public class RestApiController {
 	@RequestMapping(value = "/admin/query", method = RequestMethod.GET)
 	public void Query() {
 
-		String[] str=new String[] {"query", "123"};
+		String[] str=new String[] {"query", "129"};
 		System.out.println("str:"+str.toString());
 		end.QueryTransation(newClientBean, str);
 		System.out.println("transaction ok");
@@ -86,11 +91,25 @@ public class RestApiController {
 
 	@RequestMapping(value = "/admin/tran", method = RequestMethod.GET)
 	public void INVOKE() {
-		String[] str=new String[]{"createOrganization","123","pingan","3"};
+		String[] str=new String[]{"createOrganization","129","pingan","5"};
 
 		end.Transactionby(newClientBean, str);
 	}
+	@RequestMapping(value = "/admin/yz", method = RequestMethod.GET)
+	public String HelloYaozhen() {
 
+//		String json = "[{'day1':'work','day2':26},{'day1':123,'day2':26}";
+		return "{fadsdf:sfd}";
+
+	}
+//	@RequestMapping("getUser")
+//	public User getUser(){
+//		User user = new User();
+//		user.setEmail("9999999@qq.com");
+//		user.setPassword("111111");
+//		user.setUsername("yaozhen");
+//		return user;
+//	}
 }
 
 

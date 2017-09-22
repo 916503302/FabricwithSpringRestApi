@@ -210,11 +210,11 @@ public class SetUp {
                     if ( RESU) {
                         RESU = false;
 
-                        user.setEnrollment(ca.enroll(user.getName(), "PVmCMofRnCJC"));
+                        user.setEnrollment(ca.enroll(user.getName(), "cjGflpNCUsyD"));
                         user.setMspId(mspid);
                         System.out.println("fsd: "+ user.getName());
                     } else {
-                        user.setEnrollment(ca.enroll(user.getName(), "JGZtCYHcIpYu"));
+                        user.setEnrollment(ca.enroll(user.getName(), "mGrSrTAJoLYV"));
 
                         user.setMspId(mspid);
                         RESU = true;

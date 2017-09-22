@@ -77,10 +77,11 @@ public class End2end {
 
             SampleOrg sampleOrg = testConfig.getIntegrationTestsSampleOrg("peerOrg2");
 
-            ClientBean newClienBean =  new ClientBean(client, chaincodeID, sampleOrg, runChannel);
+            ClientBean newClienBean = new ClientBean(client, chaincodeID, sampleOrg, runChannel);
 
             Channel newChannel = constructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
             newClienBean.setChannel(newChannel);
+
             return newClienBean;
 
 
@@ -111,16 +112,15 @@ public class End2end {
 
 
 
-
             //Todo change more beautiful; thanks to zhangpeng
             RunChannel runChannel = new RunChannel();
 
             SampleOrg sampleOrg = testConfig.getIntegrationTestsSampleOrg("peerOrg2");
 
             out("Compose Client sampleOrg is " + sampleOrg.getUser(testConfig.TESTUSER_1_NAME));
-
-            Channel newChannel = constructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
             ClientBean newClienBean = new ClientBean(client, chaincodeID, sampleOrg, runChannel);
+
+            Channel newChannel = reconstructChannel(testConfig.BAR_CHANNEL_NAME, client, sampleOrg);
 
             newClienBean.setChannel(newChannel);
             return newClienBean;
@@ -143,6 +143,7 @@ public class End2end {
            runchannel.Inatall(newClientBean.getClient(),newClientBean.getChannel(),
                                 newClientBean.getSampleorg(),newClientBean.getChaincodeid());
 
+           newClientBean.setRunchannel(runchannel);
     } catch (Exception e) {
         e.printStackTrace();
        }
@@ -152,6 +153,7 @@ public class End2end {
 
         RunChannel runchannel  = newClientBean.getRunchannel();
         runchannel.Instantiate(newClientBean.getClient(),newClientBean.getChaincodeid(),newClientBean.getChannel());
+        newClientBean.setRunchannel(runchannel);
 
 
     }
@@ -254,9 +256,7 @@ public class End2end {
                     invokePropResp.size(), successful.size(), failed.size());
             if (failed.size() > 0) {
                 ProposalResponse firstTransactionProposalResponse = failed.iterator().next();
-
-                throw new ProposalException(format("Not enough endorsers for invoke(move a,b,%s):%d endorser error:%s. Was verified:%b",
-                        str, firstTransactionProposalResponse.getStatus().getStatus(), firstTransactionProposalResponse.getMessage(), firstTransactionProposalResponse.isVerified()));
+                out(firstTransactionProposalResponse.getProposalResponse().toString());
 
             }
             out("Successfully received transaction proposal responses.");

@@ -7,18 +7,12 @@ import org.hyperledger.fabric.sdk.*;
 
 public class ClientBean
 {
-    private HFClient client;
-    private Channel channel;
-    private ChaincodeID chaincodeid;
-    private SampleOrg sampleorg;
-    private RunChannel runchannel;
-    public ClientBean(HFClient client,Channel channel,ChaincodeID chaincodeid,SampleOrg sampleorg,RunChannel runchannel){
-        this.chaincodeid=chaincodeid;
-        this.channel=channel;
-        this.client=client;
-        this.runchannel=runchannel;
-        this.sampleorg=sampleorg;
-    }
+    public HFClient client;
+    public Channel channel;
+    public ChaincodeID chaincodeid;
+    public SampleOrg sampleorg;
+    public RunChannel runchannel;
+
     public ClientBean(HFClient client,ChaincodeID chaincodeid,SampleOrg sampleorg,RunChannel runchannel){
         this.chaincodeid=chaincodeid;
         this.client=client;

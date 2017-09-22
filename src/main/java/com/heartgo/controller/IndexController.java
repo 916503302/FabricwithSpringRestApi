@@ -1,4 +1,4 @@
-package com.mkyong.controller;
+package com.heartgo.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +10,17 @@ public class IndexController {
 
     private final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
-    @GetMapping("/")
+    @GetMapping("/get")
     public String index() {
         return "ajax";
     }
 
+    @GetMapping("/getTest")
+    public String yy() {
+        return "PingAnTest";
+    }
+    @GetMapping("/getTransaction")
+    public String Transaction() {
+        return "Transaction";
+    }
 }
